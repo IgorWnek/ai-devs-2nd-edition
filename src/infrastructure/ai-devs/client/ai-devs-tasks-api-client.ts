@@ -1,13 +1,12 @@
-import { TasksApiClient } from "../../application/client/tasks-api-client.js";
-import { TasksApiConfig } from "../../config/tasks-api/tasks-api-config.js";
-import { TaskDTO } from "../../application/dto/task-dto.js";
-import { TokenDTO } from "../../application/dto/token-dto.js";
+import { TasksApiClient } from "../../../application/client/tasks-api-client.js";
+import { TaskDTO } from "../../../application/dto/task-dto.js";
+import { TokenDTO } from "../../../application/dto/token-dto.js";
 import axios from "axios";
-import { TaskResultDTO } from "../../application/dto/task-result-dto.js";
-import aiDevsTasksApiConfig from "../../config/tasks-api/ai-devs-tasks-api-config.js";
+import { TaskResultDTO } from "../../../application/dto/task-result-dto.js";
+import aiDevsConfig, { AiDevsConfig } from "../../../config/tasks-api/ai-devs-config.js";
 
 interface AiDevsTaskApiClientDependencies {
-    tasksApiConfig: TasksApiConfig;
+    aiDevsConfig: AiDevsConfig;
 }
 
 interface TaskTokenResponse {
@@ -26,7 +25,7 @@ export class AiDevsTasksApiClient implements TasksApiClient {
     public constructor(private dependencies: AiDevsTaskApiClientDependencies) {}
 
     public async getTaskToken(taskDTO: TaskDTO): Promise<TokenDTO> {
-        const { apiKey } = this.dependencies.tasksApiConfig;
+        const { apiKey } = this.dependencies.aiDevsConfig;
         const taskTokenResponse = await axios.post<TaskTokenResponse>(
             `${AiDevsTasksApiClient.AI_DEVS_URL}/token/${taskDTO.name}`,
             {
@@ -64,5 +63,5 @@ export class AiDevsTasksApiClient implements TasksApiClient {
 }
 
 export const aiDevsTasksApiClient: TasksApiClient = new AiDevsTasksApiClient({
-    tasksApiConfig: aiDevsTasksApiConfig,
+    aiDevsConfig: aiDevsConfig,
 });
