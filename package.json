@@ -6,8 +6,8 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "dev": "node -r dotenv/config --watch --loader ts-node/esm src/index.ts",
-    "dev:debug": "node -r dotenv/config --watch --inspect-brk --loader ts-node/esm src/index.ts",
+    "dev": "node -r dotenv/config --loader ts-node/esm src/index.ts",
+    "dev:debug": "node -r dotenv/config --inspect-brk --loader ts-node/esm src/index.ts",
     "prettier": "prettier --write .",
     "lint": "eslint src/**/*.ts --fix"
   },
