@@ -8,12 +8,6 @@ interface OpenAiModerationApiClientDependencies {
   openAiConfig: OpenAiConfig;
 }
 
-interface SimpleModerationApiResponse {
-  id: string;
-  model: string;
-  results: [];
-}
-
 export class OpenAiModerationApiClient implements ModerationApiClient {
   private static MODERATION_ENDPOINT = 'https://api.openai.com/v1/moderations';
 
