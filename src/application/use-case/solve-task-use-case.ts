@@ -1,3 +1,3 @@
 export interface SolveTaskUseCase<T> {
-    execute(): Promise<T>;
+  execute(): Promise<T>;
 }

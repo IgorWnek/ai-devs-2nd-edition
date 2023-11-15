@@ -1,11 +1,11 @@
 interface ModerationResultDTOPayload {
-    flagged: boolean;
+  flagged: boolean;
 }
 
 export class ModerationResultDTO {
-    public flagged: boolean;
+  public flagged: boolean;
 
-    public constructor(payload: ModerationResultDTOPayload) {
-        this.flagged = payload.flagged;
-    }
+  public constructor(payload: ModerationResultDTOPayload) {
+    this.flagged = payload.flagged;
+  }
 }

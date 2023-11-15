@@ -1,3 +1,3 @@
 export interface ModerationObjectDTO {
-    flagged: boolean;
+  flagged: boolean;
 }
