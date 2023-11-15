@@ -1,11 +1,11 @@
 interface TokenDTOPayload {
-    value: string;
+  value: string;
 }
 
 export class TokenDTO {
-    public value: string;
+  public value: string;
 
-    public constructor(public payload: TokenDTOPayload) {
-        this.value = payload.value;
-    }
+  public constructor(public payload: TokenDTOPayload) {
+    this.value = payload.value;
+  }
 }
