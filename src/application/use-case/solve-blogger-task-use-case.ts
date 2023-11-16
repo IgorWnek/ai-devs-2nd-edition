@@ -11,7 +11,7 @@ interface SolveBloggerTaskUseCaseDependencies {
 interface BloggerTaskContent {
   code: number;
   msg: string;
-  input: string[];
+  blog: [string, string, string, string];
 }
 
 interface BloggerAnswerPayload {
