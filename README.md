@@ -9,6 +9,7 @@ Use cases are the key place where you can find the code for each task. You can f
 
 1. hello-api
 2. moderation
+3. blogger
 
 
 ## Installation
