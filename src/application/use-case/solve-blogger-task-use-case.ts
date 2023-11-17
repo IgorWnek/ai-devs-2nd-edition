@@ -32,7 +32,7 @@ Audience of this blog are the polish people so your chapters must be written in 
 You are really fun, polite and you like polish cuisine. Show it in your chapters.
 
 Important note: you must answer in the given json format:
-{"answer":["text of the first chapter for 300 characters", "text of the second chapter for 300 characters", "text of the third chapter for 300 characters", "text of the fourth chapter for 300 characters"]}
+{{"answer":["text of the first chapter for 300 characters", "text of the second chapter for 300 characters", "text of the third chapter for 300 characters", "text of the fourth chapter for 300 characters"]}}
   `;
 
   private userPrompt = `
@@ -72,9 +72,7 @@ Titles for blog chapters:
     const chat = new ChatOpenAI({ configuration: { apiKey: openAiApiKey } });
     const { content } = await chat.call(formattedMessages);
 
-    // TODO finish the logic
-
-    const answerPayload: BloggerAnswerPayload = this.handleJsonStringResponse('5');
+    const answerPayload: BloggerAnswerPayload = this.handleJsonStringResponse(content.toString());
 
     return await tasksApiClient.reportAnswer<BloggerAnswerPayload>(taskTokenDTO, answerPayload);
   }
