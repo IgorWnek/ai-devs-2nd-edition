@@ -11,6 +11,7 @@ import {
   solveBloggerTaskUseCase,
   SolveBloggerTaskUseCase,
 } from './application/use-case/solve-blogger-task-use-case.js';
+import { solveLiarTaskUseCase, SolveLiarTaskUseCase } from './application/use-case/solve-liar-task-use-case.js';
 
 async function main() {
   console.log(chalk.yellow(figlet.textSync('AI_Devs #2 CLI', { horizontalLayout: 'full' })));
@@ -45,6 +46,10 @@ async function showMenu() {
           name: 'Solve Blogger task',
           value: SolveBloggerTaskUseCase.TASK_NAME,
         },
+        {
+          name: 'Solve Liar task',
+          value: SolveLiarTaskUseCase.TASK_NAME,
+        },
         { name: 'Quit', value: 'quit' },
       ],
     },
@@ -65,6 +70,9 @@ async function performAction(action: string): Promise<void> {
       break;
     case SolveBloggerTaskUseCase.TASK_NAME:
       taskResultDTO = await solveBloggerTaskUseCase.execute();
+      break;
+    case SolveLiarTaskUseCase.TASK_NAME:
+      taskResultDTO = await solveLiarTaskUseCase.execute();
       break;
   }
 
