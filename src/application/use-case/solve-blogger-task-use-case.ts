@@ -55,7 +55,10 @@ Titles for blog chapters:
       name: SolveBloggerTaskUseCase.TASK_NAME,
     });
     const taskTokenDTO = await tasksApiClient.getTaskToken(taskDTO);
-    const bloggerTaskContent = await tasksApiClient.getTask<BloggerTaskContent>(taskTokenDTO);
+    const bloggerTaskContent = await tasksApiClient.getTask<BloggerTaskContent>({
+      taskType: 'basic',
+      token: taskTokenDTO,
+    });
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
       ['system', this.systemPrompt],

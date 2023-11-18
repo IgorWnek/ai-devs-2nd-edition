@@ -29,7 +29,10 @@ export class SolveHelloApiTask implements SolveTaskUseCase<TaskResultDTO> {
       name: SolveHelloApiTask.TASK_NAME,
     });
     const tokenDTO = await tasksApiClient.getTaskToken(taskDTO);
-    const taskResponse = await tasksApiClient.getTask<HelloApiTaskResponse>(tokenDTO);
+    const taskResponse = await tasksApiClient.getTask<HelloApiTaskResponse>({
+      taskType: 'basic',
+      token: tokenDTO,
+    });
 
     return await tasksApiClient.reportAnswer<HelloApiAnswerPayload>(tokenDTO, {
       answer: taskResponse.cookie,
