@@ -11,13 +11,15 @@ interface SolveLiarTaskUseCaseDependencies {
   openAiConfig: OpenAiConfig;
 }
 
-interface LiarTaskContent {
+type LiarTaskContent = {
   code: number;
   msg: string;
-  blog: [string, string, string, string];
-}
+  answer: string;
+};
 
-type LiarAnswerPayload = string;
+type LiarAnswerPayload = {
+  answer: string;
+};
 
 export class SolveLiarTaskUseCase implements SolveTaskUseCase<TaskResultDTO> {
   public static TASK_NAME = 'liar';
@@ -25,11 +27,16 @@ export class SolveLiarTaskUseCase implements SolveTaskUseCase<TaskResultDTO> {
   private static QUESTION = 'Are there skyscrapers in the New York city?';
 
   private systemPrompt = `
+You are a part of a guarding system which main task is to assess whether the user's answer is at all relevant to the question asked by you.
+
+Answer ultra succinctly with just one word:
+- "yes" if there is a connection,
+- "no" if there is none.
+
+Question: {question}
 `;
 
-  private userPrompt = `
-
-  `;
+  private userPrompt = '{answer}';
 
   public constructor(private dependencies: SolveLiarTaskUseCaseDependencies) {}
 
@@ -44,6 +51,9 @@ export class SolveLiarTaskUseCase implements SolveTaskUseCase<TaskResultDTO> {
     });
     const taskTokenDTO = await tasksApiClient.getTaskToken(taskDTO);
 
+    const questionForLiar = SolveLiarTaskUseCase.QUESTION;
+    console.log(`Question for the "liar": "${questionForLiar}"`);
+
     const liarTaskContent = await tasksApiClient.getTask<LiarTaskContent>({
       taskType: 'advanced',
       token: taskTokenDTO,
@@ -51,25 +61,30 @@ export class SolveLiarTaskUseCase implements SolveTaskUseCase<TaskResultDTO> {
         'content-type': 'application/x-www-form-urlencoded',
       },
       data: {
-        question: SolveLiarTaskUseCase.QUESTION,
+        question: questionForLiar,
       },
     });
 
-    console.log(liarTaskContent);
-
-    // TODO: write prompt to verify if the answer from task api is related somehow with the question
+    console.log(`Liar's answer: "${liarTaskContent.msg}"`);
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
       ['system', this.systemPrompt],
       ['human', this.userPrompt],
     ]);
 
-    const formattedMessages = await chatPrompt.formatMessages({});
+    const formattedMessages = await chatPrompt.formatMessages({
+      question: SolveLiarTaskUseCase.QUESTION,
+      answer: liarTaskContent.answer,
+    });
 
     const chat = new ChatOpenAI({ configuration: { apiKey: openAiApiKey } });
     const { content } = await chat.call(formattedMessages);
 
-    const answerPayload: LiarAnswerPayload = content.toString();
+    const answerPayload: LiarAnswerPayload = {
+      answer: content.toString(),
+    };
+
+    console.log(`Guardrail verdict on whether the question is on topic: ${answerPayload}`);
 
     return await tasksApiClient.reportAnswer<LiarAnswerPayload>(taskTokenDTO, answerPayload);
   }
