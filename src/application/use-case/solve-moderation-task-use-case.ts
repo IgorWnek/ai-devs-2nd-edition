@@ -32,7 +32,10 @@ export class SolveModerationTaskUseCase implements SolveTaskUseCase<TaskResultDT
       name: SolveModerationTaskUseCase.TASK_NAME,
     });
     const taskTokenDTO = await tasksApiClient.getTaskToken(taskDTO);
-    const taskResponse = await tasksApiClient.getTask<ModerationTaskResponse>(taskTokenDTO);
+    const taskResponse = await tasksApiClient.getTask<ModerationTaskResponse>({
+      taskType: 'basic',
+      token: taskTokenDTO,
+    });
 
     const moderationResultDTO = await openaiModerationApiClient.moderateContent(taskResponse.input);
     const answer = moderationResultDTO.map((resultDTO) => Number(resultDTO.flagged));
