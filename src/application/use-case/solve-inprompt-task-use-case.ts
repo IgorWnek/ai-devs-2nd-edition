@@ -15,7 +15,8 @@ type SolveTaskUseCaseDependencies = {
 type TaskContent = {
   code: number;
   msg: string;
-  answer: string;
+  input: string;
+  question: string;
 };
 
 type AnswerPayload = {
@@ -52,30 +53,21 @@ Question: {question}
     });
     const taskTokenDTO = await tasksApiClient.getTaskToken(taskDTO);
 
-    const questionForLiar = SolveInpromptTaskUseCase.QUESTION;
-    console.log(`Question for the "liar": "${questionForLiar}"`);
-
-    const liarTaskContent = await tasksApiClient.getTask<TaskContent>({
-      taskType: 'advanced',
+    const taskContent = await tasksApiClient.getTask<TaskContent>({
+      taskType: 'basic',
       token: taskTokenDTO,
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-      data: {
-        question: questionForLiar,
-      },
     });
-
-    console.log(`Liar's answer: "${liarTaskContent.msg}"`);
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
       ['system', this.systemPrompt],
       ['human', this.userPrompt],
     ]);
 
+    const answer = 'to be found';
+
     const formattedMessages = await chatPrompt.formatMessages({
       question: SolveInpromptTaskUseCase.QUESTION,
-      answer: liarTaskContent.answer,
+      answer,
     });
 
     const chat = new ChatOpenAI({ configuration: { apiKey: openAiApiKey } });
