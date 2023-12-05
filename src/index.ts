@@ -12,6 +12,10 @@ import {
   SolveBloggerTaskUseCase,
 } from './application/use-case/solve-blogger-task-use-case.js';
 import { solveLiarTaskUseCase, SolveLiarTaskUseCase } from './application/use-case/solve-liar-task-use-case.js';
+import {
+  solveInpromptTaskUseCase,
+  SolveInpromptTaskUseCase,
+} from './application/use-case/solve-inprompt-task-use-case.js';
 
 async function main() {
   console.clear();
@@ -51,6 +55,10 @@ async function showMenu() {
           name: 'Solve Liar task',
           value: SolveLiarTaskUseCase.TASK_NAME,
         },
+        {
+          name: 'Solve Inprompt task',
+          value: SolveInpromptTaskUseCase.TASK_NAME,
+        },
         { name: 'Quit', value: 'quit' },
       ],
     },
@@ -76,6 +84,9 @@ async function performAction(action: string): Promise<void> {
       break;
     case SolveLiarTaskUseCase.TASK_NAME:
       taskResultDTO = await solveLiarTaskUseCase.execute();
+      break;
+    case SolveInpromptTaskUseCase.TASK_NAME:
+      taskResultDTO = await solveInpromptTaskUseCase.execute();
       break;
   }
 
