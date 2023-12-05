@@ -15,7 +15,7 @@ type SolveTaskUseCaseDependencies = {
 type TaskContent = {
   code: number;
   msg: string;
-  input: string;
+  input: string[];
   question: string;
 };
 
@@ -26,19 +26,26 @@ type AnswerPayload = {
 export class SolveInpromptTaskUseCase implements SolveTaskUseCase<TaskResultDTO> {
   public static TASK_NAME = 'inprompt';
 
-  private static QUESTION = 'Are there skyscrapers in the New York city?';
-
-  private systemPrompt = `
-You are a part of a guarding system which main task is to assess whether the user's answer is at all relevant to the question asked by you.
-
-Answer ultra succinctly with just one word:
-- "yes" if there is a connection,
-- "no" if there is none.
-
-Question: {question}
+  private questionSystemPrompt = `
+You are a smart guys who knows how to recognise what is the name of person referred to in a conversation.
+Question will be in Polish language.
+Basing on the question return only the name which is referred in there and nothing more.
+Your response is a single string.
 `;
 
-  private userPrompt = '{answer}';
+  private questionUserPrompt = 'Question: {question}';
+
+  private taskSystemPrompt = `
+  You are really smart guy who is really got in concisely answers to the questions about other people.
+  You will be given with few facts about person with some name.
+  Later you will be asked the question about that person.
+  You have to answer the question using only provided context.
+  You are native speaker of polish language so this will be language of your answers.
+  Answer concisely and politely.
+  
+  ### Facts
+  {facts}
+  `;
 
   public constructor(private dependencies: SolveTaskUseCaseDependencies) {}
 
@@ -53,31 +60,45 @@ Question: {question}
     });
     const taskTokenDTO = await tasksApiClient.getTaskToken(taskDTO);
 
-    const taskContent = await tasksApiClient.getTask<TaskContent>({
+    const { input: taskInput, question: taskQuestion } = await tasksApiClient.getTask<TaskContent>({
       taskType: 'basic',
       token: taskTokenDTO,
     });
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
-      ['system', this.systemPrompt],
-      ['human', this.userPrompt],
+      ['system', this.questionSystemPrompt],
+      ['human', this.questionUserPrompt],
     ]);
 
-    const answer = 'to be found';
-
     const formattedMessages = await chatPrompt.formatMessages({
-      question: SolveInpromptTaskUseCase.QUESTION,
-      answer,
+      question: taskQuestion,
     });
 
     const chat = new ChatOpenAI({ configuration: { apiKey: openAiApiKey } });
     const { content } = await chat.call(formattedMessages);
 
+    const theName = content.toString();
+
+    const theSentences = taskInput.filter((sentence) => sentence.includes(theName));
+
+    const taskChatPrompt = ChatPromptTemplate.fromMessages([
+      ['system', this.taskSystemPrompt],
+      ['human', this.questionUserPrompt],
+    ]);
+
+    const formattedTaskMessages = await taskChatPrompt.formatMessages({
+      facts: theSentences.join(' '),
+      question: taskQuestion,
+    });
+
+    const taskChat = new ChatOpenAI({ configuration: { apiKey: openAiApiKey } });
+    const { content: taskAnswer } = await taskChat.call(formattedTaskMessages);
+
     const answerPayload: AnswerPayload = {
-      answer: content.toString(),
+      answer: taskAnswer.toString(),
     };
 
-    console.log(`Guardrail verdict on whether the question is on topic: ${answerPayload}`);
+    console.log(`Answer to the response is: ${answerPayload}`);
 
     return await tasksApiClient.reportAnswer<AnswerPayload>(taskTokenDTO, answerPayload);
   }
