@@ -11,6 +11,7 @@ Use cases are the key place where you can find the code for each task. You can f
 2. moderation
 3. blogger
 4. liar
+5. inprompt
 
 
 ## Installation
